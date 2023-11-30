@@ -4,7 +4,7 @@ import "fmt"
 
 func (c *Cli) NodeInfo() error {
 	if c.sdk == nil {
-		return fmt.Errorf("SDK is not initialized")
+		return fmt.Errorf("SDK is not initialized. Try 'connect'")
 	}
 
 	nodeState, err := c.sdk.NodeInfo()

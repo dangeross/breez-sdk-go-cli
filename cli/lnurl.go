@@ -8,7 +8,7 @@ import (
 
 func (c *Cli) AuthLnurl(lnurl string) error {
 	if c.sdk == nil {
-		return fmt.Errorf("SDK is not initialized")
+		return fmt.Errorf("SDK is not initialized. Try 'connect'")
 	}
 
 	inputType, err := breez_sdk.ParseInput(lnurl)
@@ -38,7 +38,7 @@ func (c *Cli) AuthLnurl(lnurl string) error {
 
 func (c *Cli) PayLnurl(lnurl string) error {
 	if c.sdk == nil {
-		return fmt.Errorf("SDK is not initialized")
+		return fmt.Errorf("SDK is not initialized. Try 'connect'")
 	}
 
 	inputType, err := breez_sdk.ParseInput(lnurl)
@@ -82,7 +82,7 @@ func (c *Cli) PayLnurl(lnurl string) error {
 
 func (c *Cli) WithdrawLnurl(lnurl string) error {
 	if c.sdk == nil {
-		return fmt.Errorf("SDK is not initialized")
+		return fmt.Errorf("SDK is not initialized. Try 'connect'")
 	}
 
 	inputType, err := breez_sdk.ParseInput(lnurl)

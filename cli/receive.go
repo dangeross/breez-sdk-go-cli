@@ -7,13 +7,13 @@ import (
 	qrcode "github.com/mdp/qrterminal/v3"
 )
 
-func (c *Cli) ReceivePayment (amountMsat uint64, description string) error {
+func (c *Cli) ReceivePayment(amountMsat uint64, description string) error {
 	if c.sdk == nil {
-		return fmt.Errorf("SDK is not initialized")
+		return fmt.Errorf("SDK is not initialized. Try 'connect'")
 	}
 
 	request := breez_sdk.ReceivePaymentRequest{
-		AmountMsat: amountMsat,
+		AmountMsat:  amountMsat,
 		Description: description,
 	}
 
@@ -27,9 +27,9 @@ func (c *Cli) ReceivePayment (amountMsat uint64, description string) error {
 	return nil
 }
 
-func (c *Cli) ReceiveOnchain () error {
+func (c *Cli) ReceiveOnchain() error {
 	if c.sdk == nil {
-		return fmt.Errorf("SDK is not initialized")
+		return fmt.Errorf("SDK is not initialized. Try 'connect'")
 	}
 
 	response, err := c.sdk.ReceiveOnchain(breez_sdk.ReceiveOnchainRequest{})

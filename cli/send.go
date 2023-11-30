@@ -8,7 +8,7 @@ import (
 
 func (c *Cli) SendPayment(bolt11 string, amountMsat *uint64) error {
 	if c.sdk == nil {
-		return fmt.Errorf("SDK is not initialized")
+		return fmt.Errorf("SDK is not initialized. Try 'connect'")
 	}
 
 	request := breez_sdk.SendPaymentRequest{
@@ -29,7 +29,7 @@ func (c *Cli) SendPayment(bolt11 string, amountMsat *uint64) error {
 
 func (c *Cli) SendSpontaneousPayment(nodeId string, amountMsat uint64) error {
 	if c.sdk == nil {
-		return fmt.Errorf("SDK is not initialized")
+		return fmt.Errorf("SDK is not initialized. Try 'connect'")
 	}
 
 	request := breez_sdk.SendSpontaneousPaymentRequest{
@@ -50,7 +50,7 @@ func (c *Cli) SendSpontaneousPayment(nodeId string, amountMsat uint64) error {
 
 func (c *Cli) SendOnchain(amountSat uint64, address string, satPerVByte uint32) error {
 	if c.sdk == nil {
-		return fmt.Errorf("SDK is not initialized")
+		return fmt.Errorf("SDK is not initialized. Try 'connect'")
 	}
 
 	pairInfo, err := c.sdk.FetchReverseSwapFees(breez_sdk.ReverseSwapFeesRequest{
