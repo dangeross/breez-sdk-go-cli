@@ -26,3 +26,18 @@ func (c *Cli) ReceivePayment (amountMsat uint64, description string) error {
 	qrcode.GenerateHalfBlock(response.LnInvoice.Bolt11, qrcode.L, c.App)
 	return nil
 }
+
+func (c *Cli) ReceiveOnchain () error {
+	if c.sdk == nil {
+		return fmt.Errorf("SDK is not initialized")
+	}
+
+	response, err := c.sdk.ReceiveOnchain(breez_sdk.ReceiveOnchainRequest{})
+
+	if err != nil {
+		return err
+	}
+
+	c.PrettyPrint(response)
+	return nil
+}

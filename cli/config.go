@@ -22,13 +22,8 @@ func (c *Cli) readConfig() error {
 	}
 
 	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {
-		b, err := json.Marshal(config)
-		if err != nil {
+		if err = c.writeConfig(config); err != nil {
 			return err
-		}
-
-		if err = os.WriteFile(configFilePath, b, 0644); err != nil {
-			return fmt.Errorf("could not write config file")
 		}
 
 		c.config = &config
@@ -45,6 +40,20 @@ func (c *Cli) readConfig() error {
 	}
 
 	c.config = &config
+	return nil
+}
+
+func (c *Cli) writeConfig (config Config) error {
+	configFilePath := filepath.Join(c.dataDir, "config.json")
+	b, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	if err = os.WriteFile(configFilePath, b, 0644); err != nil {
+		return fmt.Errorf("could not write config file")
+	}
+
 	return nil
 }
 

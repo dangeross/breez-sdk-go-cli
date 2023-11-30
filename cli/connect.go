@@ -37,3 +37,10 @@ func (c *Cli) Connect(inviteCode *string) error {
 	c.Println("Node was registered successfully")
 	return nil
 }
+
+func (c *Cli) SetApiKey(apiKey string) error {
+	c.config.ApiKey = apiKey
+	c.writeConfig(*c.config)
+
+	return nil
+}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/breez/breez-sdk-go/breez_sdk"
 	"github.com/dangeross/breez-sdk-go-cli/internal/util"
@@ -105,59 +106,29 @@ func (c *Cli) PrintSuccess(str string) {
 	color.New(color.FgGreen, color.Bold).Fprintln(c.App, str)
 }
 
-func (c *Cli) load() error {
-	c.AddCommand(&grumble.Command{
-		Name: "connect",
-		Help: "initialize an SDK instance",
-		Flags: func(f *grumble.Flags) {
-			f.String("i", "invite_code", "", "optional greenlight invite code")
-		},
-		Run: func(ctx *grumble.Context) (err error) {
-			inviteCode := util.NilString(ctx.Flags.String("invite_code"))
+func (c *Cli) Prompt(prompt string, a ...any) (string, error) {
+	var response string
 
-			return c.Connect(inviteCode)
-		},
-	})
+	c.Printf(prompt, a...)
+	_, err := fmt.Scanln(&response)
+		
+	return response, err
+} 
 
-	c.AddCommand(&grumble.Command{
-		Name: "node_info",
-		Help: "get the latest node state",
-		Run: func(ctx *grumble.Context) (err error) {
-			return c.NodeInfo()
-		},
-	})
+func (c *Cli) PromptNil(prompt string, a ...any) (*string, error) {
+	response, err := c.Prompt(prompt, a...)
+	if err != nil {
+		return nil, err
+	}
+		
+	return util.NilString(response), err
+} 
 
-	c.AddCommand(&grumble.Command{
-		Name: "receive_payment",
-		Help: "generate a bolt11 invoice",
-		Args: func(a *grumble.Args) {
-			a.Uint64("amount_msat", "amount to receive in millisatoshis")
-			a.String("description", "payment description", grumble.Default(""))
-		},
-		Run: func(ctx *grumble.Context) (err error) {
-			amountMsat := ctx.Args.Uint64("amount_msat")
-			description := ctx.Args.String("description")
+func (c *Cli) PromptUint64(prompt string, a ...any) (uint64, error) {
+	var response string
 
-			return c.ReceivePayment(amountMsat, description)
-		},
-	})
-
-	c.AddCommand(&grumble.Command{
-		Name: "send_payment",
-		Help: "send a lightning payment",
-		Args: func(a *grumble.Args) {
-			a.String("bolt11", "bolt11 lightning invoice")
-		},
-		Flags: func(f *grumble.Flags) {
-			f.Uint64("a", "amount_msat", 0, "amount to send in millisatoshis")
-		},
-		Run: func(ctx *grumble.Context) (err error) {
-			bolt11 := ctx.Args.String("bolt11")
-			amountMsat := util.NilUint64(ctx.Flags.Uint64("amount_msat"))
-
-			return c.SendPayment(bolt11, amountMsat)
-		},
-	})
-
-	return nil
-}
+	c.Printf(prompt, a...)
+	fmt.Scanln(&response)
+		
+	return strconv.ParseUint(response, 10, 64)
+} 
