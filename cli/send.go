@@ -11,13 +11,10 @@ func (c *Cli) SendPayment(bolt11 string, amountMsat *uint64) error {
 		return fmt.Errorf("SDK is not initialized. Try 'connect'")
 	}
 
-	request := breez_sdk.SendPaymentRequest{
+	response, err := c.sdk.SendPayment(breez_sdk.SendPaymentRequest{
 		Bolt11:     bolt11,
 		AmountMsat: amountMsat,
-	}
-
-	response, err := c.sdk.SendPayment(request)
-
+	})
 	if err != nil {
 		return err
 	}
@@ -32,13 +29,10 @@ func (c *Cli) SendSpontaneousPayment(nodeId string, amountMsat uint64) error {
 		return fmt.Errorf("SDK is not initialized. Try 'connect'")
 	}
 
-	request := breez_sdk.SendSpontaneousPaymentRequest{
+	response, err := c.sdk.SendSpontaneousPayment(breez_sdk.SendSpontaneousPaymentRequest{
 		NodeId:     nodeId,
 		AmountMsat: amountMsat,
-	}
-
-	response, err := c.sdk.SendSpontaneousPayment(request)
-
+	})
 	if err != nil {
 		return err
 	}

@@ -5,7 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (c *Cli) OnEvent (breezEvent breez_sdk.BreezEvent) {
+func (c *Cli) OnEvent(breezEvent breez_sdk.BreezEvent) {
 	c.log.Infof("Received Breez event: %#v", breezEvent)
 
 	switch event := breezEvent.(type) {

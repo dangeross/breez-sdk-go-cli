@@ -38,6 +38,23 @@ func (c *Cli) Connect(inviteCode *string) error {
 	return nil
 }
 
+func (c *Cli) Disconnect() error {
+	if c.sdk == nil {
+		return fmt.Errorf("SDK is already disconnected")
+	}
+
+	err := c.sdk.Disconnect()
+	if err != nil {
+		return err
+	}
+
+	c.sdk.Destroy()
+	c.sdk = nil
+
+	c.Println("Node was stopped successfully")
+	return nil
+}
+
 func (c *Cli) SetApiKey(apiKey string) error {
 	c.config.ApiKey = apiKey
 	c.writeConfig(*c.config)

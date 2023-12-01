@@ -111,24 +111,24 @@ func (c *Cli) Prompt(prompt string, a ...any) (string, error) {
 
 	c.Printf(prompt, a...)
 	_, err := fmt.Scanln(&response)
-		
+
 	return response, err
-} 
+}
 
 func (c *Cli) PromptNil(prompt string, a ...any) (*string, error) {
 	response, err := c.Prompt(prompt, a...)
 	if err != nil {
 		return nil, err
 	}
-		
+
 	return util.NilString(response), err
-} 
+}
 
 func (c *Cli) PromptUint64(prompt string, a ...any) (uint64, error) {
 	var response string
 
 	c.Printf(prompt, a...)
 	fmt.Scanln(&response)
-		
+
 	return strconv.ParseUint(response, 10, 64)
-} 
+}

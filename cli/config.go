@@ -43,7 +43,7 @@ func (c *Cli) readConfig() error {
 	return nil
 }
 
-func (c *Cli) writeConfig (config Config) error {
+func (c *Cli) writeConfig(config Config) error {
 	configFilePath := filepath.Join(c.dataDir, "config.json")
 	b, err := json.Marshal(config)
 	if err != nil {

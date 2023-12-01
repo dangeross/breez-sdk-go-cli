@@ -4,8 +4,30 @@ import (
 	"fmt"
 
 	"github.com/breez/breez-sdk-go/breez_sdk"
+	"github.com/dangeross/breez-sdk-go-cli/internal/util"
 	qrcode "github.com/mdp/qrterminal/v3"
 )
+
+func (c *Cli) BuyBitcoin(providerText string) error {
+	if c.sdk == nil {
+		return fmt.Errorf("SDK is not initialized. Try 'connect'")
+	}
+
+	provider, err := util.AsProvider(providerText)
+	if err != nil {
+		return err
+	}
+
+	response, err := c.sdk.BuyBitcoin(breez_sdk.BuyBitcoinRequest{
+		Provider: provider,
+	})
+	if err != nil {
+		return err
+	}
+
+	c.PrettyPrint(response)
+	return nil
+}
 
 func (c *Cli) ReceivePayment(amountMsat uint64, description string) error {
 	if c.sdk == nil {
