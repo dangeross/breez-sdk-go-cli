@@ -19,7 +19,7 @@ Commands:
   clear                      clear the screen
   close_lsp_channels         close all LSP channels
   connect                    initialize an SDK instance
-  connect_lsp                close all LSP channels
+  connect_lsp                connect to another LSP
   disconnect                 stop the SDK instance
   execute_dev_command        execute a low level node command (used for debugging)
   exit                       exit the shell

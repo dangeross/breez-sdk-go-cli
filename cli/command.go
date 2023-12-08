@@ -308,7 +308,7 @@ func (c *Cli) load() error {
 
 	c.AddCommand(&grumble.Command{
 		Name: "connect_lsp",
-		Help: "close all LSP channels",
+		Help: "connect to another LSP",
 		Args: func(a *grumble.Args) {
 			a.String("lsp_id", "LSP id to connect to")
 		},
