@@ -38,6 +38,21 @@ func (c *Cli) CheckMessage(message, pubkey, signature string) error {
 	return nil
 }
 
+func (c *Cli) ConfigureNode(closeToAddress *string) error {
+	if c.sdk == nil {
+		return fmt.Errorf("SDK is not initialized. Try 'connect'")
+	}
+
+	err := c.sdk.ConfigureNode(breez_sdk.ConfigureNodeRequest{
+		CloseToAddress: closeToAddress,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *Cli) NodeCredentials() error {
 	if c.sdk == nil {
 		return fmt.Errorf("SDK is not initialized. Try 'connect'")
@@ -63,6 +78,19 @@ func (c *Cli) NodeInfo() error {
 	}
 
 	c.PrettyPrint(nodeState)
+	return nil
+}
+
+func (c *Cli) RegisterWebhook(url string) error {
+	if c.sdk == nil {
+		return fmt.Errorf("SDK is not initialized. Try 'connect'")
+	}
+
+	err := c.sdk.RegisterWebhook(url)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

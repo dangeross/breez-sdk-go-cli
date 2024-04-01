@@ -76,6 +76,19 @@ func (c *Cli) load() error {
 	})
 
 	c.AddCommand(&grumble.Command{
+		Name: "configure_node",
+		Help: "configure the node",
+		Flags: func(f *grumble.Flags) {
+			f.StringL("close_to_address", "", "address to send funds to during a mutual channel close")
+		},
+		Run: func(ctx *grumble.Context) (err error) {
+			closeToAddress := util.NilString(ctx.Flags.String("close_to_address"))
+
+			return c.ConfigureNode(closeToAddress)
+		},
+	})
+
+	c.AddCommand(&grumble.Command{
 		Name: "node_credentials",
 		Help: "get the node credentials",
 		Run: func(ctx *grumble.Context) (err error) {
@@ -88,6 +101,19 @@ func (c *Cli) load() error {
 		Help: "get the latest node state",
 		Run: func(ctx *grumble.Context) (err error) {
 			return c.NodeInfo()
+		},
+	})
+
+	c.AddCommand(&grumble.Command{
+		Name: "register_webhook",
+		Help: "register a webhook URL that will be called on specific events",
+		Args: func(a *grumble.Args) {
+			a.String("url", "webhook URL")
+		},
+		Run: func(ctx *grumble.Context) (err error) {
+			url := ctx.Args.String("url")
+
+			return c.RegisterWebhook(url)
 		},
 	})
 
@@ -294,6 +320,21 @@ func (c *Cli) load() error {
 		},
 	})
 
+	c.AddCommand(&grumble.Command{
+		Name: "set_payment_metadata",
+		Help: "set the metadata for a given payment",
+		Args: func(a *grumble.Args) {
+			a.String("payment_hash", "hash of the payment")
+			a.String("metadata", "JSON encoded metadata")
+		},
+		Run: func(ctx *grumble.Context) (err error) {
+			paymentHash := ctx.Args.String("payment_hash")
+			metadata := ctx.Args.String("metadata")
+
+			return c.SetPaymentMetadata(paymentHash, metadata)
+		},
+	})
+
 	/**
 	 * LSP
 	 */
@@ -339,12 +380,16 @@ func (c *Cli) load() error {
 		Name: "open_channel_fee",
 		Help: "calculate the open channel fee",
 		Args: func(a *grumble.Args) {
-			a.Uint64("amount_msat", "amount to receive in millisatoshis")
+			a.Uint64("amount_msat", "amount to receive in millisatoshis", grumble.Default(uint64(0)))
+		},
+		Flags: func(f *grumble.Flags) {
+			f.Int("e", "expiry", 0, "expiry in seconds")
 		},
 		Run: func(ctx *grumble.Context) (err error) {
-			amountMsat := ctx.Args.Uint64("amount_msat")
+			amountMsat := util.NilUint64(ctx.Flags.Uint64("amount_msat"))
+			expiry := util.NilUint32(uint32(ctx.Flags.Uint("expiry")))
 
-			return c.OpenChannelFee(amountMsat)
+			return c.OpenChannelFee(amountMsat, expiry)
 		},
 	})
 
@@ -357,6 +402,21 @@ func (c *Cli) load() error {
 		Help: "list refundable swap addresses",
 		Run: func(ctx *grumble.Context) (err error) {
 			return c.ListRefundables()
+		},
+	})
+
+	c.AddCommand(&grumble.Command{
+		Name: "prepare_redeem_onchain_funds",
+		Help: "calculate the fee for a potential transaction",
+		Args: func(a *grumble.Args) {
+			a.String("to_address", "address to send redeem to")
+			a.Uint64("sat_per_vbyte", "fee rate for the redeem transaction")
+		},
+		Run: func(ctx *grumble.Context) (err error) {
+			toAddress := ctx.Args.String("to_address")
+			satPerVByte := uint32(ctx.Args.Uint("sat_per_vbyte"))
+
+			return c.PrepareRedeemOnchainFunds(toAddress, satPerVByte)
 		},
 	})
 
@@ -378,25 +438,25 @@ func (c *Cli) load() error {
 	})
 
 	c.AddCommand(&grumble.Command{
-		Name: "prepare_sweep",
-		Help: "calculate the fee for a potential transaction",
-		Args: func(a *grumble.Args) {
-			a.String("to_address", "address to send refund to")
-			a.Uint64("sat_per_vbyte", "fee rate for the refund transaction")
-		},
-		Run: func(ctx *grumble.Context) (err error) {
-			toAddress := ctx.Args.String("to_address")
-			satPerVByte := ctx.Args.Uint64("sat_per_vbyte")
-
-			return c.PrepareSweep(toAddress, satPerVByte)
-		},
-	})
-
-	c.AddCommand(&grumble.Command{
 		Name: "recommended_fees",
 		Help: "list recommended fees based on the mempool",
 		Run: func(ctx *grumble.Context) (err error) {
 			return c.RecommendedFees()
+		},
+	})
+
+	c.AddCommand(&grumble.Command{
+		Name: "redeem_onchain_funds",
+		Help: "send on-chain funds to an external address",
+		Args: func(a *grumble.Args) {
+			a.String("to_address", "address to send redeem to")
+			a.Uint("sat_per_vbyte", "fee rate for the redeem transaction")
+		},
+		Run: func(ctx *grumble.Context) (err error) {
+			toAddress := ctx.Args.String("to_address")
+			satPerVByte := uint32(ctx.Args.Uint("sat_per_vbyte"))
+
+			return c.RedeemOnchainFunds(toAddress, satPerVByte)
 		},
 	})
 
@@ -414,21 +474,6 @@ func (c *Cli) load() error {
 			satPerVByte := uint32(ctx.Args.Uint("sat_per_vbyte"))
 
 			return c.Refund(swapAddress, toAddress, satPerVByte)
-		},
-	})
-
-	c.AddCommand(&grumble.Command{
-		Name: "sweep",
-		Help: "send on-chain funds to an external address",
-		Args: func(a *grumble.Args) {
-			a.String("to_address", "address to send sweep to")
-			a.Uint("sat_per_vbyte", "fee rate for the sweep transaction")
-		},
-		Run: func(ctx *grumble.Context) (err error) {
-			toAddress := ctx.Args.String("to_address")
-			satPerVByte := uint32(ctx.Args.Uint("sat_per_vbyte"))
-
-			return c.Sweep(toAddress, satPerVByte)
 		},
 	})
 
@@ -470,6 +515,14 @@ func (c *Cli) load() error {
 		Help: "calculate the maximum amount for a reverse swap",
 		Run: func(ctx *grumble.Context) (err error) {
 			return c.MaxReverseSwapAmount()
+		},
+	})
+
+	c.AddCommand(&grumble.Command{
+		Name: "rescan_swaps",
+		Help: "rescan all swaps",
+		Run: func(ctx *grumble.Context) (err error) {
+			return c.RescanSwaps()
 		},
 	})
 

@@ -63,3 +63,16 @@ func (c *Cli) MaxReverseSwapAmount() error {
 	c.PrettyPrint(response)
 	return nil
 }
+
+func (c *Cli) RescanSwaps() error {
+	if c.sdk == nil {
+		return fmt.Errorf("SDK is not initialized. Try 'connect'")
+	}
+
+	err := c.sdk.RescanSwaps()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

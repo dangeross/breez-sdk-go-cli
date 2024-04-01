@@ -46,3 +46,16 @@ func (c *Cli) PaymentByHash(paymentHash string) error {
 	c.PrettyPrint(response)
 	return nil
 }
+
+func (c *Cli) SetPaymentMetadata(paymentHash, metadata string) error {
+	if c.sdk == nil {
+		return fmt.Errorf("SDK is not initialized. Try 'connect'")
+	}
+
+	err := c.sdk.SetPaymentMetadata(paymentHash, metadata)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

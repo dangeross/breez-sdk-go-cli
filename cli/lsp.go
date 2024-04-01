@@ -62,13 +62,14 @@ func (c *Cli) ListLsps() error {
 	return nil
 }
 
-func (c *Cli) OpenChannelFee(amountMsat uint64) error {
+func (c *Cli) OpenChannelFee(amountMsat *uint64, expiry *uint32) error {
 	if c.sdk == nil {
 		return fmt.Errorf("SDK is not initialized. Try 'connect'")
 	}
 
 	response, err := c.sdk.OpenChannelFee(breez_sdk.OpenChannelFeeRequest{
 		AmountMsat: amountMsat,
+		Expiry:     expiry,
 	})
 	if err != nil {
 		return err
